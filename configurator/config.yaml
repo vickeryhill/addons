@@ -38,3 +38,46 @@ schema:
     - str
   ssh_keys:
     - str
+
+
+rest:
+  - resource: "https://api.netzero.energy/api/v1/!secret netzero_site_id/config"
+    headers:
+      Authorization: "Bearer !secret netzero_api_token"
+    scan_interval: 60
+    sensor:
+      - name: "Netzero Powerwall %"
+        value_template: "{{ value_json.percentage_charged }}"
+        unit_of_measurement: "%"
+        device_class: battery
+        state_class: measurement
+      - name: "Netzero Operational Mode"
+        value_template: "{{ value_json.operational_mode }}"
+      - name: "Netzero Backup Reserve"
+        value_template: "{{ value_json.backup_reserve_percent }}"
+        unit_of_measurement: "%"
+      - name: "Netzero Grid Charging"
+        value_template: "{{ value_json.grid_charging }}"
+      - name: "Netzero Energy Exports"
+        value_template: "{{ value_json.energy_exports }}"
+      - name: "Netzero Grid Status"
+        value_template: "{{ value_json.grid_status }}"
+rest_command:
+  netzero_set_backup_reserve:
+    url: "https://api.netzero.energy/api/v1/!secret netzero_site_id/config"
+    method: POST
+    headers:
+      Authorization: "Bearer !secret netzero_api_token"
+    payload: '{"backup_reserve_percent": {{ reserve }}}'
+  netzero_set_operational_mode:
+    url: "https://api.netzero.energy/api/v1/!secret netzero_site_id/config"
+    method: POST
+    headers:
+      Authorization: "Bearer !secret netzero_api_token"
+    payload: '{"operational_mode": "{{ mode }}"}'
+  netzero_set_energy_exports:
+    url: "https://api.netzero.energy/api/v1/!secret netzero_site_id/config"
+    method: POST
+    headers:
+      Authorization: "Bearer !secret netzero_api_token"
+    payload: '{"energy_exports": "{{ mode }}"}'
